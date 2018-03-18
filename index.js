@@ -20,22 +20,24 @@ if (detector == null) {
  * @param {*} beaconData 
  */
 function findBeacon(beaconData) {
-    // データにdetectorを付与
-    beaconData.detector = detector;
     // データに生成時間を付与(キューイング管理用)
     beaconData.created = new Date();
     // キューイング
     beaconQueue.queueing(beaconData, 1000 * 60, (data) => {
-
         // ログ出力
         console.log(data);
-        // createdはgcp側で付与するのでnullを設定
-        data.created = null;
+
+        // publishするデータを生成
+        var publishData = {
+            detector: detector,
+            uuid: data.uuid,
+            major: data.major,
+            minor: data.minor,
+        }
         // gcpにpublishする
-        beaconGcf.beaconPublish(data, (err) => {
+        beaconGcf.beaconPublish(publishData, (err) => {
             if (err) console.log(err);
         });
-
     });
 }
 
@@ -45,7 +47,6 @@ function callBeacon1() {
         uuid: "AAAAAAA",
         major: 0,
         minor: 0,
-        created: new Date(),
     }
 
     findBeacon(data);
