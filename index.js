@@ -1,6 +1,5 @@
-const beaconGcf = require('beacon_gcf')
-
 const beaconQueue = require('./lib/beaconQueue')
+const httpRequest = require('./lib/httpRequest')
 
 // detector設定チェック
 const detector = process.env.PI_DETECTOR;
@@ -9,17 +8,11 @@ if (detector == null) {
     return 0;
 }
 
-// GCPの認証情報チェック
-// if (process.env.GOOGLE_APPLICATION_CREDENTIALS == null) {
-//     console.error("Environment variable of GOOGLE_APPLICATION_CREDENTIALS is required.")
-//     return 0;
-// }
-
 /**
  * ビーコン発見時に呼び出すメソッド
  * @param {*} beaconData 
  */
-function findBeacon(beaconData) {
+function findBeacon(beaconData, callback) {
     // データに生成時間を付与(キューイング管理用)
     beaconData.created = new Date();
     // キューイング
@@ -33,10 +26,10 @@ function findBeacon(beaconData) {
             uuid: data.uuid,
             major: data.major,
             minor: data.minor,
-        }
-        // gcpにpublishする
-        beaconGcf.beaconPublish(publishData, (err) => {
-            if (err) console.log(err);
+        };
+        // httpリクエスト送信
+        httpRequest(publishData, (err) => {
+            if (err != 200 && callback) callback('http error ' + err);
         });
     });
 }
@@ -49,7 +42,9 @@ function callBeacon1() {
         minor: 0,
     }
 
-    findBeacon(data);
+    findBeacon(data, (err) => {
+        if (err) console.log(err);
+    });
 
     setTimeout(callBeacon1, 1000);
 }

@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/namityo/beacon_pi#readme",
   "dependencies": {
-    "beacon_gcf": "github:namityo/beacon_gcf#release",
     "moment": "^2.21.0"
   }
 }

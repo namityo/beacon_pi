@@ -1,0 +1,9 @@
+{
+    "hostname": "us-central1-composed-yen-198011.cloudfunctions.net",
+    "port": 443,
+    "path": "/beaconlog",
+    "method": "PUT",
+    "headers": {
+        "Content-Type": "application/json"
+    }
+}
