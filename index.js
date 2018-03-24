@@ -2,7 +2,8 @@ const beaconQueue = require('./lib/beaconQueue')
 const httpRequest = require('./lib/httpRequest')
 
 // detector設定チェック
-const detector = process.env.PI_DETECTOR;
+//const detector = process.env.PI_DETECTOR;
+const detector = 'pi'
 if (detector == null) {
     console.error("Environment variable of PI_DETECTOR is required.");
     return 0;
@@ -49,4 +50,11 @@ function callBeacon1() {
     setTimeout(callBeacon1, 1000);
 }
 
-callBeacon1()
+var Bleacon = require("bleacon");
+Bleacon.startScanning();
+Bleacon.on("discover", function(bleacon) {
+    findBeacon(bleacon, (err) => {
+        if (err) console.log(err);
+    });
+});
+
